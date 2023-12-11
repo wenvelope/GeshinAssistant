@@ -7,6 +7,8 @@ import UiState
 import bean.GenshinAccount
 import bean.GenshinAccountTable
 import com.ctrip.sqllin.dsl.sql.X
+import com.ctrip.sqllin.dsl.sql.clause.EQ
+import com.ctrip.sqllin.dsl.sql.clause.WHERE
 import com.ctrip.sqllin.dsl.sql.statement.SelectStatement
 import com.wuhongru.jini.WRegistry
 import dataBase.GenshinDataBase
@@ -20,7 +22,10 @@ class AppViewModel : BaseViewModelCore<AppViewModel.AssistantState, AppViewModel
     data class AssistantState(
         val rightPage: RightPage = RightPage.GenshinPage,
         val genshinAccountList: List<GenshinAccount> = emptyList(),
-        val showDialog: Boolean = false
+        val showDialog: Boolean = false,
+        val showTip: Boolean = false,
+        val tipMessage: String = "",
+        val onTipDialogConfirmClick: () -> Unit = {}
     ) : UiState
 
     enum class RightPage {
@@ -38,6 +43,11 @@ class AppViewModel : BaseViewModelCore<AppViewModel.AssistantState, AppViewModel
         object ShowDialog : AssistantEvent
 
         object HideDialog : AssistantEvent
+
+        data class ShowTip(val tipMessage: String, val onConfirmClick: () -> Unit = {}) : AssistantEvent
+        data class DeleteAccount(val account: GenshinAccount) : AssistantEvent
+
+        object HideTip : AssistantEvent
 
 
     }
@@ -116,6 +126,32 @@ class AppViewModel : BaseViewModelCore<AppViewModel.AssistantState, AppViewModel
                         updateState {
                             copy(showDialog = true)
                         }
+                    }
+
+                    AssistantEvent.HideTip -> {
+                        updateState {
+                            copy(showTip = false, tipMessage = "", onTipDialogConfirmClick = {})
+                        }
+                    }
+
+
+                    is AssistantEvent.ShowTip -> {
+                        updateState {
+                            copy(
+                                showTip = true,
+                                tipMessage = it.tipMessage,
+                                onTipDialogConfirmClick = it.onConfirmClick
+                            )
+                        }
+                    }
+
+                    is AssistantEvent.DeleteAccount -> {
+                        GenshinDataBase.database {
+                            GenshinAccountTable { table ->
+                                table DELETE WHERE(name EQ it.account.name)
+                            }
+                        }
+                        sendEvent(AssistantEvent.RefreshGenshinAccountList)
                     }
                 }
             }
