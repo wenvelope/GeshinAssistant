@@ -60,6 +60,7 @@ compose.desktop {
             packageName = "genshinAssistant"
             packageVersion = "1.0.1"
             modules("java.sql")
+            includeAllModules = true
             description = "a mihoyo game assistant"
             copyright = "© 2022 职业程序员. All rights reserved."
             vendor = "小黄头号应援粉丝团"
