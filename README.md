@@ -37,7 +37,7 @@ Welcome all contributions and suggestions! Please feel free to submit pull reque
 
 ## 📧 联系/ Contact
 
-如果你有任何问题或者建议，欢迎联系我。[whr1930@tju.edu.cn](whr1930@tju.edu.cn)
+如果你有任何问题或者建议，欢迎联系我。[whr1930@tju.edu.cn](mailto:whr1930@tju.edu.cn)
 
 祝你游戏愉快！🎉
 Wish you a happy gaming experience! 🎉
