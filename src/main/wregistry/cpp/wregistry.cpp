@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 #include <map>
-#include <jni.h>
+#include "jni.h"
 
 using namespace std;
 
@@ -123,4 +123,54 @@ Java_com_wuhongru_jini_WRegistry_setRegistryValue(JNIEnv* env, jobject /* this *
     }
 
     return result;
+}
+
+
+char* printAllValues(HKEY hKey) {
+    DWORD dwIndex = 0;
+    char valueName[256];
+    DWORD valueNameLength = 256;
+    static char valueData[2048];  // Make this static so it can be returned
+    DWORD valueDataLength = 2048;
+    DWORD dwType = 0;
+
+    while (RegEnumValue(hKey, dwIndex++, valueName, &valueNameLength, NULL, &dwType,
+                        reinterpret_cast<LPBYTE>(valueData), &valueDataLength) == ERROR_SUCCESS) {
+        if (strcmp(valueName, "MatchedExeFullPath") == 0 && strstr((char*)valueData, "YuanShen.exe") != NULL) {
+            return (char*)valueData;
+        }
+        valueNameLength = 256;
+        valueDataLength = 2048;
+    }
+    return NULL;
+}
+
+extern "C" JNIEXPORT jstring JNICALL
+Java_com_wuhongru_jini_WRegistry_searchYuanShenPath(JNIEnv* env, jobject thisObj) {
+    HKEY hKey;
+    DWORD dwIndex = 0;
+    FILETIME ftLastWriteTime;
+    char szSubKey[256];
+    DWORD dwSubKeyLength = 256;
+    LPCSTR path = "System\\GameConfigStore\\Children";
+
+    if (RegOpenKeyEx(HKEY_CURRENT_USER, path, 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
+        while (RegEnumKeyEx(hKey, dwIndex++, szSubKey, &dwSubKeyLength, NULL, NULL, NULL, &ftLastWriteTime) == ERROR_SUCCESS) {
+            HKEY hSubKey;
+            char subKeyPath[1024];
+            sprintf(subKeyPath, "%s\\%s", path, szSubKey);
+            if (RegOpenKeyEx(HKEY_CURRENT_USER, subKeyPath, 0, KEY_READ, &hSubKey) == ERROR_SUCCESS) {
+                char* matchedExeFullPath = printAllValues(hSubKey);
+                if (matchedExeFullPath != NULL) {
+                    RegCloseKey(hSubKey);
+                    RegCloseKey(hKey);
+                    return env->NewStringUTF(matchedExeFullPath);
+                }
+                RegCloseKey(hSubKey);
+            }
+            dwSubKeyLength = 256;
+        }
+        RegCloseKey(hKey);
+    }
+    return NULL;
 }

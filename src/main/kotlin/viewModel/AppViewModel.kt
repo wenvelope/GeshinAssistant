@@ -25,7 +25,7 @@ class AppViewModel : BaseViewModelCore<AppViewModel.AssistantState, AppViewModel
         val showDialog: Boolean = false,
         val showTip: Boolean = false,
         val tipMessage: String = "",
-        val onTipDialogConfirmClick: () -> Unit = {}
+        val onTipDialogConfirmClick: (() -> Unit)? = null
     ) : UiState
 
     enum class RightPage {
@@ -37,14 +37,20 @@ class AppViewModel : BaseViewModelCore<AppViewModel.AssistantState, AppViewModel
         data class NavigationToPage(val page: RightPage) : AssistantEvent
         data class AddGenshinAccount(val name: String) : AssistantEvent
 
-        data class StartMIHOYOGame(val account: GenshinAccount) : AssistantEvent
+        data class StartMIHOYOGame(val account: GenshinAccount, val path: String) : AssistantEvent
         object RefreshGenshinAccountList : AssistantEvent
 
         object ShowDialog : AssistantEvent
 
         object HideDialog : AssistantEvent
 
-        data class ShowTip(val tipMessage: String, val onConfirmClick: () -> Unit = {}) : AssistantEvent
+        /**
+         * @author wu
+         *
+         * @param tipMessage 提示信息
+         * @param onConfirmClick 默认为空 仅仅作为提示信息使用 如果不为空则会显示取消按钮 并且传入确认之后的逻辑
+         */
+        data class ShowTip(val tipMessage: String, val onConfirmClick: (() -> Unit)? = null) : AssistantEvent
         data class DeleteAccount(val account: GenshinAccount) : AssistantEvent
 
         object HideTip : AssistantEvent
@@ -77,15 +83,31 @@ class AppViewModel : BaseViewModelCore<AppViewModel.AssistantState, AppViewModel
                             setRegistryValue(WRegistry.key1, it.account.value1)
                             setRegistryValue(WRegistry.key2, it.account.value2)
                         }
-                        try {
-                            withContext(Dispatchers.IO) {
-                                val pathToExe = "E:\\Genshin Impact\\Genshin Impact Game\\YuanShen.exe"
+
+                        withContext(Dispatchers.IO) {
+                            try {
+                                val pathToExe = it.path
                                 val file = File(pathToExe)
-                                Desktop.getDesktop().open(file)
+                                if (!file.exists()) {
+                                    sendEvent(
+                                        action = AssistantEvent.ShowTip(
+                                            tipMessage = "打开失败"
+                                        )
+                                    )
+                                    throw IOException("File does not exist: $pathToExe")
+                                } else {
+                                    Desktop.getDesktop().open(file)
+                                }
+                            } catch (e: IOException) {
+                                e.printStackTrace()
+                                sendEvent(
+                                    action = AssistantEvent.ShowTip(
+                                        tipMessage = "打开失败"
+                                    )
+                                )
                             }
-                        } catch (e: IOException) {
-                            e.printStackTrace()
                         }
+
                     }
 
                     is AssistantEvent.AddGenshinAccount -> {
@@ -130,7 +152,7 @@ class AppViewModel : BaseViewModelCore<AppViewModel.AssistantState, AppViewModel
 
                     AssistantEvent.HideTip -> {
                         updateState {
-                            copy(showTip = false, tipMessage = "", onTipDialogConfirmClick = {})
+                            copy(showTip = false, tipMessage = "", onTipDialogConfirmClick = null)
                         }
                     }
 

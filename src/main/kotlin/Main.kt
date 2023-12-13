@@ -15,8 +15,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import components.AddAccountDialog
+import components.GenshinPage
 import components.TipDialog
-import components.UserAccountList
 import viewModel.AppViewModel
 
 
@@ -48,8 +48,9 @@ fun App() {
                     onDismissRequest = {
                         appViewModel.sendEvent(AppViewModel.AssistantEvent.HideTip)
                     },
-                    onConfirmClick = appState.onTipDialogConfirmClick,
-                    showCancel = appState.onTipDialogConfirmClick != {}
+                    onConfirmClick = { appState.onTipDialogConfirmClick?.invoke() },
+
+                    showCancel = appState.onTipDialogConfirmClick != null
                 )
             }
         }
@@ -62,22 +63,7 @@ fun RightBanner(appViewModel: AppViewModel) {
     val appState by appViewModel.container.uiStateFlow.collectAsState()
     when (appState.rightPage) {
         AppViewModel.RightPage.GenshinPage -> {
-            UserAccountList(
-                dataList = appState.genshinAccountList,
-                onAccountClick = {
-                    appViewModel.sendEvent(AppViewModel.AssistantEvent.StartMIHOYOGame(it))
-                }, onAddAccountClick = {
-                    appViewModel.sendEvent(AppViewModel.AssistantEvent.ShowDialog)
-                }, onDeleteAccountClick = {
-                    appViewModel.sendEvent(
-                        AppViewModel.AssistantEvent.ShowTip(
-                            tipMessage = "是否删除",
-                            onConfirmClick = {
-                                appViewModel.sendEvent(AppViewModel.AssistantEvent.DeleteAccount(it))
-                            })
-                    )
-                }
-            )
+            GenshinPage(appViewModel)
         }
 
         AppViewModel.RightPage.HonkaiImapackPage -> {
@@ -85,6 +71,7 @@ fun RightBanner(appViewModel: AppViewModel) {
         }
     }
 }
+
 
 data class GameItem(
     val pageName: AppViewModel.RightPage,
