@@ -122,7 +122,7 @@ fun LeftBanner(
 }
 
 fun main() = application {
-    Window(onCloseRequest = ::exitApplication, title = "MiHoYO Assistant", undecorated = false) {
+    Window(onCloseRequest = ::exitApplication, title = "MiHoYo Assistant", undecorated = false) {
         App()
     }
 }
