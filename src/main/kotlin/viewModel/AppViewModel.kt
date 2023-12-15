@@ -10,7 +10,7 @@ import com.ctrip.sqllin.dsl.sql.X
 import com.ctrip.sqllin.dsl.sql.clause.EQ
 import com.ctrip.sqllin.dsl.sql.clause.WHERE
 import com.ctrip.sqllin.dsl.sql.statement.SelectStatement
-import com.wuhongru.jini.WRegistry
+import com.wuhongru.jni.WRegistry
 import dataBase.GenshinDataBase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -85,7 +85,9 @@ class AppViewModel : BaseViewModelCore<AppViewModel.AssistantState, AppViewModel
                         }
 
                         withContext(Dispatchers.IO) {
+                            val processName = "YuanShen.exe"
                             try {
+                                WRegistry().terminateProcessByName(processName)
                                 val pathToExe = it.path
                                 val file = File(pathToExe)
                                 if (!file.exists()) {

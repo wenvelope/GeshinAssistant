@@ -4,7 +4,7 @@ import BaseViewModelCore
 import MutableContainer
 import UiEvent
 import UiState
-import com.wuhongru.jini.WRegistry
+import com.wuhongru.jni.WRegistry
 
 class GenshinViewModel : BaseViewModelCore<GenshinViewModel.GenShinState, GenshinViewModel.GenshinEvent>() {
     data class GenShinState(

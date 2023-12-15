@@ -3,6 +3,7 @@
 #include <string>
 #include <map>
 #include "jni.h"
+#include <tlhelp32.h>
 
 using namespace std;
 
@@ -18,9 +19,10 @@ std::wstring stringToWString(const std::string &s) {
 }
 
 
+// 获取原神注册表信息
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_com_wuhongru_jini_WRegistry_getAccountInfoFromReg(JNIEnv *env, jobject thisObj) {
+Java_com_wuhongru_jni_WRegistry_getAccountInfoFromReg(JNIEnv *env, jobject thisObj) {
     std::map<std::string, std::string> accountInfo;
     HKEY hKey;
     LONG lRes = RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\miHoYo\\原神", 0, KEY_READ, &hKey);
@@ -88,7 +90,7 @@ Java_com_wuhongru_jini_WRegistry_getAccountInfoFromReg(JNIEnv *env, jobject this
 
 
 extern "C" JNIEXPORT jlong JNICALL
-Java_com_wuhongru_jini_WRegistry_setRegistryValue(JNIEnv* env, jobject /* this */, jstring jKey, jstring jValue) {
+Java_com_wuhongru_jni_WRegistry_setRegistryValue(JNIEnv* env, jobject /* this */, jstring jKey, jstring jValue) {
     const char* keyCStr = env->GetStringUTFChars(jKey, 0);
     const char* valueCStr = env->GetStringUTFChars(jValue, 0);
     std::string key(keyCStr);
@@ -146,7 +148,7 @@ char* printAllValues(HKEY hKey) {
 }
 
 extern "C" JNIEXPORT jstring JNICALL
-Java_com_wuhongru_jini_WRegistry_searchYuanShenPath(JNIEnv* env, jobject thisObj) {
+Java_com_wuhongru_jni_WRegistry_searchYuanShenPath(JNIEnv* env, jobject thisObj) {
     HKEY hKey;
     DWORD dwIndex = 0;
     FILETIME ftLastWriteTime;
@@ -173,4 +175,58 @@ Java_com_wuhongru_jini_WRegistry_searchYuanShenPath(JNIEnv* env, jobject thisObj
         RegCloseKey(hKey);
     }
     return NULL;
+}
+
+
+//根据名字关闭进程
+extern "C" JNIEXPORT jboolean JNICALL
+Java_com_wuhongru_jni_WRegistry_terminateProcessByName(JNIEnv* env, jobject /* this */, jstring jName) {
+    const char* name = env->GetStringUTFChars(jName, 0);
+
+    HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (hSnapshot == INVALID_HANDLE_VALUE) {
+        std::cout << "Cannot create snapshot" << std::endl;
+        env->ReleaseStringUTFChars(jName, name);
+        return JNI_FALSE;
+    }
+
+    PROCESSENTRY32 pe;
+    pe.dwSize = sizeof(PROCESSENTRY32);
+
+    if (!Process32First(hSnapshot, &pe)) {
+        std::cout << "Cannot get the first process" << std::endl;
+        CloseHandle(hSnapshot);
+        env->ReleaseStringUTFChars(jName, name);
+        return JNI_FALSE;
+    }
+
+    do {
+        if (strcmp(pe.szExeFile, name) == 0) {
+            HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, pe.th32ProcessID);
+            if (hProcess == NULL) {
+                std::cout << "Cannot open process" << std::endl;
+                CloseHandle(hSnapshot);
+                env->ReleaseStringUTFChars(jName, name);
+                return JNI_FALSE;
+            }
+
+            if (!TerminateProcess(hProcess, 0)) {
+                std::cout << "Cannot terminate process" << std::endl;
+                CloseHandle(hProcess);
+                CloseHandle(hSnapshot);
+                env->ReleaseStringUTFChars(jName, name);
+                return JNI_FALSE;
+            }
+
+            CloseHandle(hProcess);
+            CloseHandle(hSnapshot);
+            env->ReleaseStringUTFChars(jName, name);
+            return JNI_TRUE;
+        }
+    } while (Process32Next(hSnapshot, &pe));
+
+    std::cout << "Cannot find process" << std::endl;
+    CloseHandle(hSnapshot);
+    env->ReleaseStringUTFChars(jName, name);
+    return JNI_FALSE;
 }
