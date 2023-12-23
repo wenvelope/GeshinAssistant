@@ -1,4 +1,4 @@
-package components
+package screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.TextField
@@ -9,6 +9,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import bean.GenshinAccount
+import components.UserAccountList
 import viewModel.AppViewModel
 import viewModel.GenshinViewModel
 
@@ -58,7 +60,7 @@ fun GenshinPage(appViewModel: AppViewModel) {
         UserAccountList(
             dataList = appState.genshinAccountList,
             onAccountClick = {
-                appViewModel.sendEvent(AppViewModel.AssistantEvent.StartMIHOYOGame(it, genshinState.genshinPath ?: ""))
+                appViewModel.sendEvent(AppViewModel.AssistantEvent.StartMIHOYOGame(it as GenshinAccount, genshinState.genshinPath ?: ""))
             }, onAddAccountClick = {
                 appViewModel.sendEvent(AppViewModel.AssistantEvent.ShowDialog)
             }, onDeleteAccountClick = {
@@ -66,7 +68,7 @@ fun GenshinPage(appViewModel: AppViewModel) {
                     AppViewModel.AssistantEvent.ShowTip(
                         tipMessage = "是否删除",
                         onConfirmClick = {
-                            appViewModel.sendEvent(AppViewModel.AssistantEvent.DeleteAccount(it))
+                            appViewModel.sendEvent(AppViewModel.AssistantEvent.DeleteGenshinAccount(it as GenshinAccount))
                         })
                 )
             }

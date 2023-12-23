@@ -15,8 +15,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import components.AddAccountDialog
-import components.GenshinPage
+import screens.GenshinPage
 import components.TipDialog
+import screens.TieScreen
 import viewModel.AppViewModel
 
 
@@ -39,8 +40,19 @@ fun App() {
                 Divider(modifier = Modifier.fillMaxHeight().width(1.dp))
                 RightBanner(appViewModel = appViewModel)
             }
-            if (appState.showDialog) {
-                AddAccountDialog(appViewModel)
+            if (appState.showAddAccountDialog) {
+                AddAccountDialog(
+                    onDismissRequest = {
+                        appViewModel.sendEvent(AppViewModel.AssistantEvent.HideDialog)
+                    },
+                    onConfirmClick = {
+                        appViewModel.sendEvent(AppViewModel.AssistantEvent.AddGenshinAccount(it))
+                        appViewModel.sendEvent(AppViewModel.AssistantEvent.HideDialog)
+                    },
+                    onCancelClick = {
+                        appViewModel.sendEvent(AppViewModel.AssistantEvent.HideDialog)
+                    }
+                )
             }
             if (appState.showTip) {
                 TipDialog(
@@ -67,7 +79,7 @@ fun RightBanner(appViewModel: AppViewModel) {
         }
 
         AppViewModel.RightPage.HonkaiImapackPage -> {
-
+            TieScreen()
         }
     }
 }

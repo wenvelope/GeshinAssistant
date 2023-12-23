@@ -15,6 +15,7 @@ import androidx.compose.material.Text
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import bean.Account
 
 @Preview
 @Composable
@@ -35,10 +36,10 @@ fun UserAccountListPreview() {
 
 @Composable
 fun UserAccountList(
-    dataList: List<GenshinAccount>,
-    onAccountClick: (GenshinAccount) -> Unit = {},
+    dataList: List<Account>,
+    onAccountClick: (Account) -> Unit = {},
     onAddAccountClick: () -> Unit = {},
-    onDeleteAccountClick: (GenshinAccount) -> Unit = {}
+    onDeleteAccountClick: (Account) -> Unit = {}
 ) {
     Box(
         modifier = Modifier.fillMaxSize()

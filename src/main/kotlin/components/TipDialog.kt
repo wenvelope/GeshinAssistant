@@ -9,7 +9,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import viewModel.AppViewModel
 
 @Preview
 @Composable
@@ -72,10 +71,14 @@ fun TipDialog(
 
 
 @Composable
-fun AddAccountDialog(appViewModel: AppViewModel) {
+fun AddAccountDialog(
+    onDismissRequest: () -> Unit = {},
+    onConfirmClick: (String) -> Unit = {},
+    onCancelClick: () -> Unit = {}
+) {
     var text by remember { mutableStateOf("") }
     Dialog(onDismissRequest = {
-        appViewModel.sendEvent(AppViewModel.AssistantEvent.HideDialog)
+        onDismissRequest.invoke()
     }) {
         Surface(
             modifier = Modifier.fillMaxSize().padding(vertical = 160.dp),
@@ -109,7 +112,7 @@ fun AddAccountDialog(appViewModel: AppViewModel) {
                     Button(
                         modifier = Modifier.size(80.dp, 60.dp).align(Alignment.CenterVertically),
                         onClick = {
-                            appViewModel.sendEvent(AppViewModel.AssistantEvent.HideDialog)
+                            onCancelClick.invoke()
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
@@ -122,8 +125,7 @@ fun AddAccountDialog(appViewModel: AppViewModel) {
                         modifier = Modifier.size(100.dp, 60.dp).align(Alignment.CenterVertically)
                             .padding(horizontal = 10.dp),
                         onClick = {
-                            appViewModel.sendEvent(AppViewModel.AssistantEvent.AddGenshinAccount(text))
-                            appViewModel.sendEvent(AppViewModel.AssistantEvent.HideDialog)
+                            onConfirmClick.invoke(text)
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary,

@@ -25,6 +25,12 @@ class GenshinDataBase {
                                     "    value2 TEXT NOT NULL\n" +
                                     ");"
                         )
+                        it.execSQL(
+                            "CREATE TABLE TieAccount (\n" +
+                                    "    name TEXT PRIMARY KEY,\n" +
+                                    "    value TEXT NOT NULL\n" +
+                                    ");"
+                        )
                     },
                 )
             )

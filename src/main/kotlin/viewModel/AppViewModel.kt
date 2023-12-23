@@ -22,7 +22,7 @@ class AppViewModel : BaseViewModelCore<AppViewModel.AssistantState, AppViewModel
     data class AssistantState(
         val rightPage: RightPage = RightPage.GenshinPage,
         val genshinAccountList: List<GenshinAccount> = emptyList(),
-        val showDialog: Boolean = false,
+        val showAddAccountDialog: Boolean = false,
         val showTip: Boolean = false,
         val tipMessage: String = "",
         val onTipDialogConfirmClick: (() -> Unit)? = null
@@ -51,7 +51,7 @@ class AppViewModel : BaseViewModelCore<AppViewModel.AssistantState, AppViewModel
          * @param onConfirmClick 默认为空 仅仅作为提示信息使用 如果不为空则会显示取消按钮 并且传入确认之后的逻辑
          */
         data class ShowTip(val tipMessage: String, val onConfirmClick: (() -> Unit)? = null) : AssistantEvent
-        data class DeleteAccount(val account: GenshinAccount) : AssistantEvent
+        data class DeleteGenshinAccount(val account: GenshinAccount) : AssistantEvent
 
         object HideTip : AssistantEvent
 
@@ -125,7 +125,6 @@ class AppViewModel : BaseViewModelCore<AppViewModel.AssistantState, AppViewModel
                             }
                         }
                         sendEvent(AssistantEvent.RefreshGenshinAccountList)
-
                     }
 
                     AssistantEvent.RefreshGenshinAccountList -> {
@@ -142,13 +141,13 @@ class AppViewModel : BaseViewModelCore<AppViewModel.AssistantState, AppViewModel
 
                     AssistantEvent.HideDialog -> {
                         updateState {
-                            copy(showDialog = false)
+                            copy(showAddAccountDialog = false)
                         }
                     }
 
                     AssistantEvent.ShowDialog -> {
                         updateState {
-                            copy(showDialog = true)
+                            copy(showAddAccountDialog = true)
                         }
                     }
 
@@ -169,7 +168,7 @@ class AppViewModel : BaseViewModelCore<AppViewModel.AssistantState, AppViewModel
                         }
                     }
 
-                    is AssistantEvent.DeleteAccount -> {
+                    is AssistantEvent.DeleteGenshinAccount -> {
                         GenshinDataBase.database {
                             GenshinAccountTable { table ->
                                 table DELETE WHERE(name EQ it.account.name)
@@ -177,6 +176,8 @@ class AppViewModel : BaseViewModelCore<AppViewModel.AssistantState, AppViewModel
                         }
                         sendEvent(AssistantEvent.RefreshGenshinAccountList)
                     }
+
+
                 }
             }
         }

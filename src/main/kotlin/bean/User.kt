@@ -17,5 +17,17 @@ data class Person(
 data class GenshinAccount(
     val value1: String,
     val value2: String,
+    override val name: String
+):Account
+interface Account {
     val name: String
-)
+}
+
+
+@Stable
+@DBRow(tableName = "TieAccount")
+@Serializable
+data class TieAccount(
+    val value: String,
+    override val name: String
+):Account

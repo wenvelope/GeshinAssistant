@@ -29,7 +29,7 @@ class GenshinViewModel : BaseViewModelCore<GenshinViewModel.GenShinState, Genshi
                     GenshinEvent.SearchGenShinPath -> {
                         val registry = WRegistry()
                         val path = registry.searchYuanShenPath()
-                        container.updateState {
+                        updateState {
                             copy(genshinPath = path)
                         }
                     }
