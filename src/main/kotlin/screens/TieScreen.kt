@@ -47,7 +47,7 @@ fun TieScreen() {
                     onClick = {
                         honkaiViewModel.sendEvent(HonkaiImapackViewModel.HonkaiImapackEvent.SearchHonkaiImapackPath)
                     }) {
-                    Text(text = "搜索路径")
+                    Text(text = "自动路径")
                 }
                 Button(
                     modifier = Modifier.align(Alignment.CenterVertically),

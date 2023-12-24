@@ -9,7 +9,7 @@ class GenshinDataBase {
             Database(
                 DatabaseConfiguration(
                     name = "genshinAssistant.db",
-                    path =  System.getProperty("compose.application.resources.dir").toDatabasePath(),
+                    path = System.getProperty("compose.application.resources.dir").toDatabasePath(),
                     version = 1,
                     isReadOnly = false,
                     inMemory = false,
@@ -28,6 +28,18 @@ class GenshinDataBase {
                         it.execSQL(
                             "CREATE TABLE TieAccount (\n" +
                                     "    name TEXT PRIMARY KEY,\n" +
+                                    "    value TEXT NOT NULL\n" +
+                                    ");"
+                        )
+                        it.execSQL(
+                            "CREATE TABLE TieGamePath (\n" +
+                                    "id integer primary key autoincrement,\n" +
+                                    "    value TEXT NOT NULL\n" +
+                                    ");"
+                        )
+                        it.execSQL(
+                            "CREATE TABLE GenshinGamePath (\n" +
+                                    "id integer primary key autoincrement,\n" +
                                     "    value TEXT NOT NULL\n" +
                                     ");"
                         )

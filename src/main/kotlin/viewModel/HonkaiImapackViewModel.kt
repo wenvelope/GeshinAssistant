@@ -6,8 +6,11 @@ import UiEvent
 import UiState
 import bean.TieAccount
 import bean.TieAccountTable
+import bean.TieGamePath
+import bean.TieGamePathTable
 import com.ctrip.sqllin.dsl.sql.X
 import com.ctrip.sqllin.dsl.sql.clause.EQ
+import com.ctrip.sqllin.dsl.sql.clause.SET
 import com.ctrip.sqllin.dsl.sql.clause.WHERE
 import com.ctrip.sqllin.dsl.sql.statement.SelectStatement
 import com.wuhongru.jni.WRegistry
@@ -55,7 +58,31 @@ class HonkaiImapackViewModel :
                 selectStatement = table SELECT X
             }
         }
-        return HonkaiImapackState(honkaiImapackAccountList = selectStatement.getResults(), honkaiImapackPath = WRegistry().searchTiePath())
+        lateinit var pathSelectStatement: SelectStatement<TieGamePath>
+        GenshinDataBase.database {
+            TieGamePathTable { table ->
+                pathSelectStatement = table SELECT WHERE(id EQ 1)
+            }
+        }
+        val path = if (pathSelectStatement.getResults().isEmpty()) {
+            val path = WRegistry().searchTiePath()
+            GenshinDataBase.database {
+                TieGamePathTable { table ->
+                    table INSERT TieGamePath(
+                        id = 1,
+                        value = path ?: ""
+                    )
+                }
+            }
+            path
+        } else {
+            pathSelectStatement.getResults().find { it.id == 1 }?.value
+        }
+
+        return HonkaiImapackState(
+            honkaiImapackAccountList = selectStatement.getResults(),
+            honkaiImapackPath = path
+        )
     }
 
     override suspend fun reduce(container: MutableContainer<HonkaiImapackState, HonkaiImapackEvent>) {
@@ -66,11 +93,25 @@ class HonkaiImapackViewModel :
                         updateState {
                             copy(honkaiImapackPath = it.path)
                         }
+                        GenshinDataBase.database {
+                            TieGamePathTable { table ->
+                                table UPDATE SET {
+                                    value = it.path
+                                } WHERE (id EQ 1)
+                            }
+                        }
                     }
 
                     HonkaiImapackEvent.SearchHonkaiImapackPath -> {
                         val registry = WRegistry()
                         val path = registry.searchTiePath()
+                        GenshinDataBase.database {
+                            TieGamePathTable { table ->
+                                table UPDATE SET {
+                                    value = path ?: ""
+                                } WHERE (id EQ 1)
+                            }
+                        }
                         updateState {
                             copy(honkaiImapackPath = path)
                         }
@@ -113,7 +154,7 @@ class HonkaiImapackViewModel :
 
                     is HonkaiImapackEvent.StartHonkaiImapackGame -> {
                         WRegistry().apply {
-                            setTieRegistryValue(WRegistry.TIE_KEY,it.account.value)
+                            setTieRegistryValue(WRegistry.TIE_KEY, it.account.value)
                         }
 
                         withContext(Dispatchers.IO) {
@@ -153,6 +194,7 @@ class HonkaiImapackViewModel :
                             copy(showTip = false)
                         }
                     }
+
                     is HonkaiImapackEvent.ShowTip -> {
                         updateState {
                             copy(showTip = true, tipMessage = it.tipMessage)

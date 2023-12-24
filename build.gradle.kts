@@ -68,11 +68,11 @@ compose.desktop {
 
             windows {
                 // a version for all Windows distribution
-                packageVersion = "1.2.3"
+                packageVersion = "1.2.4"
                 // a version only for the msi package
-                msiPackageVersion = "1.2.3"
+                msiPackageVersion = "1.2.4"
                 // a version only for the exe package
-                exePackageVersion = "1.2.3"
+                exePackageVersion = "1.2.4"
             }
 
 
@@ -112,7 +112,7 @@ tasks.register("compileJni") {
     description = "compile jni binary file for desktop"
 
     val resourcePath = File(rootProject.projectDir, "resources/windows")
-    val binFilePath = File(resourcePath, "wregistry.bin")
+    val binFilePath = File(resourcePath, "wregistry.dll")
     val cppFileDirectory = File(rootProject.projectDir, "src/main/wregistry/cpp")
     val cppFilePath = File(cppFileDirectory, "wregistry.cpp")
 
@@ -159,7 +159,7 @@ tasks.register("compileJni") {
             throw GradleException("Error: Not find command g++, Please install it and add to your system environment path\n${runTestResult.second}")
         }
 
-        val command = "g++ ${cppFilePath.absolutePath} -o ${binFilePath.absolutePath} -shared -fPIC -I ${includePath1.absolutePath} -I ${includePath2.absolutePath}"
+        val command = "g++ ${cppFilePath.absolutePath} -o ${binFilePath.absolutePath} -shared -fPIC -I ${includePath1.absolutePath} -I ${includePath2.absolutePath} -static-libgcc -static-libstdc++ -Wl,-Bstatic,--whole-archive -lwinpthread -Wl,--no-whole-archive"
 
         project.logger.info("running command $command……")
 

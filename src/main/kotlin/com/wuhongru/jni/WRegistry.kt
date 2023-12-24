@@ -23,7 +23,7 @@ class WRegistry {
         const val TIE_KEY = "MIHOYOSDK_ADL_PROD_CN_h3123967166"
 
         init {
-            val libFile = File(System.getProperty("compose.application.resources.dir")).resolve("wregistry.bin")
+            val libFile = File(System.getProperty("compose.application.resources.dir")).resolve("wregistry.dll")
             System.load(libFile.absolutePath)
 //            val path = "D:\\IntellijProject\\genshinAssistant\\resources\\windows\\wregistry.bin"
 //            System.load(path)

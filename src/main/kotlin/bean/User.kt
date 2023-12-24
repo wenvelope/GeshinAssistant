@@ -18,7 +18,8 @@ data class GenshinAccount(
     val value1: String,
     val value2: String,
     override val name: String
-):Account
+) : Account
+
 interface Account {
     val name: String
 }
@@ -30,4 +31,22 @@ interface Account {
 data class TieAccount(
     val value: String,
     override val name: String
-):Account
+) : Account
+
+
+@Stable
+@DBRow(tableName = "TieGamePath")
+@Serializable
+data class TieGamePath(
+    val id: Int = 1,
+    val value: String,
+)
+
+@Stable
+@DBRow(tableName = "GenshinGamePath")
+@Serializable
+data class GenshinGamePath(
+    val id: Int = 1,
+    val value: String,
+)
+
