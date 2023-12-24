@@ -1,12 +1,12 @@
 # 🎮 GenshinAssistant
 
-欢迎来到 GenshinAssistant 项目！这是一个专为原神玩家设计的多账号管理工具。
+欢迎来到 GenshinAssistant 项目！这是一个专为原神 和崩坏 星穹铁道 玩家设计的多账号管理工具。
 
 ## ✨ 特点 / Feature
 
 - **多账号信息保存**：无需记住所有账号的信息，GenshinAssistant 可以帮你保存所有账号的登录信息。
 - **多账号切换快速启动**：在不同的账号之间切换从未如此简单，只需一键，你就可以快速启动你的游戏。
-- **自动搜索原神启动地址**：无需手动寻找原神的启动地址，GenshinAssistant 可以自动为你找到它。
+- **自动搜索原神/星铁启动地址**：无需手动寻找原神的启动地址，GenshinAssistant 可以自动为你找到它。
 - **账号信息均保存在本地**：你的账号信息将被安全地保存在你的本地设备上，无需担心隐私泄露。
 
 - **Multiple Account Information Storage**: No need to remember the information of all accounts, GenshinAssistant can help you save the login information for all accounts.
