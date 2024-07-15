@@ -15,12 +15,12 @@
 - **Account Information Stored Locally**: Your account information will be securely stored on your local device, so there's no need to worry about privacy leaks.
 
 ## 🚀 开始使用 / Start
-[下载链接](https://github.com/wenvelope/GeshinAssistant/releases/tag/v1.2.1)
+[下载链接](https://github.com/wenvelope/GeshinAssistant/releases/tag/1.2.4)
 安装后请注意安装的文件夹  点击genshinAssistant.exe  
 1.先登录原神  
 2.点击新建账号 输入自定义昵称即可保存信息。
 
-[Download link](https://github.com/wenvelope/GeshinAssistant/releases/tag/v1.2.1)
+[Download link](https://github.com/wenvelope/GeshinAssistant/releases/tag/1.2.4)
 After installation, please pay attention to the installed folder.
 Click on genshinAssistant.exe
 1. Log in to Genshin Impact first
