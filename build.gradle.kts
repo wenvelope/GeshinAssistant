@@ -68,11 +68,11 @@ compose.desktop {
 
             windows {
                 // a version for all Windows distribution
-                packageVersion = "1.2.4"
+                packageVersion = "1.2.5"
                 // a version only for the msi package
-                msiPackageVersion = "1.2.4"
+                msiPackageVersion = "1.2.5"
                 // a version only for the exe package
-                exePackageVersion = "1.2.4"
+                exePackageVersion = "1.2.5"
             }
 
 

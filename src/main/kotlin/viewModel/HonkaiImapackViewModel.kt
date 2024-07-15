@@ -26,9 +26,12 @@ class HonkaiImapackViewModel :
     data class HonkaiImapackState(
         val honkaiImapackPath: String? = null,
         val honkaiImapackAccountList: List<TieAccount> = emptyList(),
-        val showAddHonkaiImapackAccount: Boolean = false,
         val showTip: Boolean = false,
         val tipMessage: String = "",
+
+        val showAddHonkaiImapackAccount: Boolean = false,
+        val dialogTitle: String = "添加MIHOYO账号",
+        val selectedAccount: TieAccount? = null
     ) : UiState
 
     sealed interface HonkaiImapackEvent : UiEvent {
@@ -44,10 +47,14 @@ class HonkaiImapackViewModel :
 
         data class StartHonkaiImapackGame(val account: TieAccount, val path: String) : HonkaiImapackEvent
 
-        object ShowDialog : HonkaiImapackEvent
+        data class ShowChangeNameDialog(val account: TieAccount) : HonkaiImapackEvent
+
+        object ShowAddAccountDialog : HonkaiImapackEvent
 
         object HideDialog : HonkaiImapackEvent
         data class ShowTip(val tipMessage: String) : HonkaiImapackEvent
+        data class ChangeHonkaiImapackAccountName(val originName: String, val name: String) : HonkaiImapackEvent
+
         object HideTip : HonkaiImapackEvent
     }
 
@@ -160,7 +167,7 @@ class HonkaiImapackViewModel :
                         withContext(Dispatchers.IO) {
                             val processName = "StarRail.exe"
                             try {
-                                WRegistry().terminateProcessByName(processName)
+//                                WRegistry().terminateProcessByName(processName)
                                 val pathToExe = it.path
                                 val file = File(pathToExe)
                                 if (!file.exists()) {
@@ -177,7 +184,7 @@ class HonkaiImapackViewModel :
                         }
                     }
 
-                    HonkaiImapackEvent.ShowDialog -> {
+                    HonkaiImapackEvent.ShowAddAccountDialog -> {
                         updateState {
                             copy(showAddHonkaiImapackAccount = true)
                         }
@@ -198,6 +205,35 @@ class HonkaiImapackViewModel :
                     is HonkaiImapackEvent.ShowTip -> {
                         updateState {
                             copy(showTip = true, tipMessage = it.tipMessage)
+                        }
+                    }
+
+                    is HonkaiImapackEvent.ShowChangeNameDialog -> {
+                        updateState {
+                            copy(
+                                showAddHonkaiImapackAccount = true,
+                                dialogTitle = "修改账号名",
+                                selectedAccount = it.account
+                            )
+                        }
+                    }
+
+                    is HonkaiImapackEvent.ChangeHonkaiImapackAccountName -> {
+                        try {
+                            GenshinDataBase.database {
+                                TieAccountTable { table ->
+                                    table UPDATE SET {
+                                        name = it.name.replace("'", "''")
+                                    } WHERE (name EQ it.originName.replace("'", "''"))
+                                }
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            sendEvent(HonkaiImapackEvent.HideDialog)
+                            sendEvent(HonkaiImapackEvent.ShowTip("修改失败 ${e.message}"))
+                        } finally {
+                            sendEvent(HonkaiImapackEvent.HideDialog)
+                            sendEvent(HonkaiImapackEvent.RefreshHonkaiImapackAccount)
                         }
                     }
                 }

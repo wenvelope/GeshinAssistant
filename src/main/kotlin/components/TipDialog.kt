@@ -70,11 +70,13 @@ fun TipDialog(
 }
 
 
+
 @Composable
 fun AddAccountDialog(
     onDismissRequest: () -> Unit = {},
     onConfirmClick: (String) -> Unit = {},
-    onCancelClick: () -> Unit = {}
+    onCancelClick: () -> Unit = {},
+    titleName : String = "添加MIHOYO账号"
 ) {
     var text by remember { mutableStateOf("") }
     Dialog(onDismissRequest = {
@@ -89,7 +91,7 @@ fun AddAccountDialog(
                 modifier = Modifier.fillMaxSize()
             ) {
                 Text(
-                    text = "添加MIHOYO账号", modifier = Modifier.padding(top = 20.dp, start = 20.dp),
+                    text = titleName, modifier = Modifier.padding(top = 20.dp, start = 20.dp),
                     color = MaterialTheme.colorScheme.onSurface
                 )
 

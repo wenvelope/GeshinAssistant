@@ -74,9 +74,12 @@ fun TieScreen() {
                         )
                     )
                 }, onAddAccountClick = {
-                    honkaiViewModel.sendEvent(HonkaiImapackViewModel.HonkaiImapackEvent.ShowDialog)
+                    honkaiViewModel.sendEvent(HonkaiImapackViewModel.HonkaiImapackEvent.ShowAddAccountDialog)
                 }, onDeleteAccountClick = {
                     honkaiViewModel.sendEvent(HonkaiImapackViewModel.HonkaiImapackEvent.DeleteHonkaiImapackAccount(it as TieAccount))
+                },
+                onChangeNameClick = {
+                    honkaiViewModel.sendEvent(HonkaiImapackViewModel.HonkaiImapackEvent.ShowChangeNameDialog(it as TieAccount))
                 }
             )
         }
@@ -89,9 +92,20 @@ fun TieScreen() {
                     honkaiViewModel.sendEvent(HonkaiImapackViewModel.HonkaiImapackEvent.HideDialog)
                 },
                 onConfirmClick = {
-                    honkaiViewModel.sendEvent(HonkaiImapackViewModel.HonkaiImapackEvent.AddHonkaiImapackAccount(it))
-                    honkaiViewModel.sendEvent(HonkaiImapackViewModel.HonkaiImapackEvent.HideDialog)
-                }
+                    when (honkaiState.dialogTitle) {
+                        "添加MIHOYO账号" -> {
+                            honkaiViewModel.sendEvent(HonkaiImapackViewModel.HonkaiImapackEvent.AddHonkaiImapackAccount(it))
+                            honkaiViewModel.sendEvent(HonkaiImapackViewModel.HonkaiImapackEvent.HideDialog)
+                        }
+
+                        "修改账号名" -> {
+                            honkaiViewModel.sendEvent(HonkaiImapackViewModel.HonkaiImapackEvent.ChangeHonkaiImapackAccountName(originName = honkaiState.selectedAccount?.name ?: "", name = it))
+
+                        }
+                    }
+
+                },
+                titleName = honkaiState.dialogTitle
             )
         }
 

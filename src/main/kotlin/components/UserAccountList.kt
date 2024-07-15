@@ -39,7 +39,8 @@ fun UserAccountList(
     dataList: List<Account>,
     onAccountClick: (Account) -> Unit = {},
     onAddAccountClick: () -> Unit = {},
-    onDeleteAccountClick: (Account) -> Unit = {}
+    onDeleteAccountClick: (Account) -> Unit = {},
+    onChangeNameClick: (Account) -> Unit = {}
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -71,6 +72,18 @@ fun UserAccountList(
                                     )
                                 ) {
                                     Text("启动")
+                                }
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Button(
+                                    onClick = {
+                                        onChangeNameClick.invoke(it)
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.primary,
+                                        contentColor = MaterialTheme.colorScheme.onPrimary
+                                    )
+                                ) {
+                                    Text("改名")
                                 }
                                 Spacer(modifier = Modifier.width(10.dp))
                                 Button(
