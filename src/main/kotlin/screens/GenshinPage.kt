@@ -81,6 +81,9 @@ fun GenshinPage(appViewModel: AppViewModel) {
         if (genshinState.showChangeNameDialog) {
             AddAccountDialog(
                 titleName = genshinState.dialogTitle,
+                onCancelClick = {
+                    genshinViewModel.sendEvent(GenshinViewModel.GenshinEvent.HideAddAccountDialog)
+                },
                 onDismissRequest = {
                     genshinViewModel.sendEvent(GenshinViewModel.GenshinEvent.HideAddAccountDialog)
                 },
